@@ -10,8 +10,13 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.hibernate:hibernate-entitymanager:5.3.7.Final'
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
+    implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
+    runtime 'com.h2database:h2:1.4.197'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.assertj:assertj-core:3.18.1'
+
 }
 
 test {
