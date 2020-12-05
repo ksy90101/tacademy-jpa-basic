@@ -16,27 +16,24 @@ public class Member {
 
     private String name;
 
-    public Long getId() {
-        return id;
+    public Member() {
     }
 
-    public void setId(final Long id) {
+    public Member(final Long id, final Team team, final String name) {
         this.id = id;
+        this.team = team;
+        this.name = name;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Team getTeam() {
         return team;
     }
 
-    public void setTeam(final Team team) {
-        this.team = team;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
     }
 }

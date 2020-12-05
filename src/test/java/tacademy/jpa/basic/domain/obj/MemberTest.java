@@ -23,14 +23,9 @@ class MemberTest {
         transaction.begin();
 
         try {
-            final Team team = new Team();
-            team.setId(1L);
-            team.setName("Team A");
+            final Team team = new Team(1L, "Team A");
             em.persist(team);
-            final Member member = new Member();
-            member.setId(1L);
-            member.setTeam(team);
-            member.setName("Member A");
+            final Member member = new Member(1L, team, "Member A");
             em.persist(member);
 
             em.flush();
@@ -54,4 +49,33 @@ class MemberTest {
         emf.close();
     }
 
+    @DisplayName("동등성 체크")
+    @Test
+    void identityTest() {
+        final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        final EntityManager em = emf.createEntityManager();
+        final EntityTransaction transaction = em.getTransaction();
+
+        transaction.begin();
+
+        try {
+            final Team team = new Team(1L, "Team A");
+            em.persist(team);
+            final Member memberA = new Member(1L, team, "Member A");
+            em.persist(memberA);
+
+            final Member findMemberA = em.find(Member.class, memberA.getId());
+
+            assertThat(memberA).isEqualTo(findMemberA);
+
+            transaction.commit();
+        } catch (final Exception e) {
+            transaction.rollback();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+
+    }
 }
