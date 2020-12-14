@@ -78,4 +78,76 @@ class MemberTest {
         emf.close();
 
     }
+
+    @DisplayName("업데이트 테스트")
+    @Test
+    void updateTest() {
+        final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        final EntityManager em = emf.createEntityManager();
+        final EntityTransaction transaction = em.getTransaction();
+
+        transaction.begin();
+
+        try {
+            final Team team = new Team(1L, "Team A");
+            em.persist(team);
+            final Member memberA = new Member(1L, team, "Member A");
+            em.persist(memberA);
+
+            em.flush();
+            em.clear();
+
+            final Member findMember = em.find(Member.class, memberA.getId());
+            findMember.setName("Member B");
+
+            em.flush();
+            em.clear();
+
+            final Member findMember2 = em.find(Member.class, memberA.getId());
+
+            assertThat(findMember2.getName()).isEqualTo("Member B");
+
+            transaction.commit();
+        } catch (final Exception e) {
+            transaction.rollback();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
+
+    @DisplayName("양방향 테스트")
+    @Test
+    void bidirectionalTest() {
+        final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        final EntityManager em = emf.createEntityManager();
+        final EntityTransaction transaction = em.getTransaction();
+
+        transaction.begin();
+
+        try {
+            final Team team = new Team(1L, "Team A");
+            em.persist(team);
+            final Member memberA = new Member(1L, team, "Member A");
+            em.persist(memberA);
+            final Member memberB = new Member(1L, team, "Member B");
+            em.persist(memberB);
+
+            em.flush();
+            em.clear();
+
+            final Team findTeam = em.find(Team.class, team.getId());
+
+            assertThat(findTeam.getMembers()).hasSize(2);
+
+            transaction.commit();
+        } catch (final Exception e) {
+            transaction.rollback();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
 }

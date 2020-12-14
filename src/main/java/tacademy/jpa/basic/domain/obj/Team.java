@@ -1,7 +1,11 @@
 package tacademy.jpa.basic.domain.obj;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Team {
@@ -10,12 +14,19 @@ public class Team {
 
     private String name;
 
+    @OneToMany(mappedBy = "team")
+    private final List<Member> members = new ArrayList<>();
+
     public Team() {
     }
 
     public Team(final Long id, final String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public List<Member> getMembers() {
+        return members;
     }
 
     public Long getId() {

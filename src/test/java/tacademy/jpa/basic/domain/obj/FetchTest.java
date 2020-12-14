@@ -11,7 +11,7 @@ import javax.persistence.Persistence;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class FetchTest {
+class FetchTest {
     @DisplayName("즉시로딩 테스트")
     @Test
     void SaveAndFindForObj() {
