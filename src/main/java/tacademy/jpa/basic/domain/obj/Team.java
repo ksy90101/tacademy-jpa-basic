@@ -9,13 +9,11 @@ import javax.persistence.OneToMany;
 
 @Entity
 public class Team {
-    @Id
-    private Long id;
-
-    private String name;
-
     @OneToMany(mappedBy = "team")
     private final List<Member> members = new ArrayList<>();
+    @Id
+    private Long id;
+    private String name;
 
     public Team() {
     }
@@ -35,5 +33,10 @@ public class Team {
 
     public String getName() {
         return name;
+    }
+
+    public void updateMember(final Member member) {
+        member.setTeam(this);
+        this.members.add(member);
     }
 }

@@ -150,4 +150,67 @@ class MemberTest {
 
         emf.close();
     }
+
+    @DisplayName("양방향 실수 테스트")
+    @Test
+    void bidirectionalNotActionTest() {
+        final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        final EntityManager em = emf.createEntityManager();
+        final EntityTransaction transaction = em.getTransaction();
+
+        transaction.begin();
+
+        try {
+            final Team team = new Team(1L, "Team A");
+            em.persist(team);
+            final Member memberA = new Member(1L, null, "Member A");
+            em.persist(memberA);
+
+            team.getMembers().add(memberA);
+
+            em.flush();
+            em.clear();
+            final Member findMember = em.find(Member.class, memberA.getId());
+
+            assertThat(findMember.getTeam()).isNull();
+            transaction.commit();
+        } catch (final Exception e) {
+            transaction.rollback();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
+
+    @DisplayName("양방향 실수 해결 테스트")
+    @Test
+    void bidirectionalNotActionSolutionTest() {
+        final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        final EntityManager em = emf.createEntityManager();
+        final EntityTransaction transaction = em.getTransaction();
+
+        transaction.begin();
+
+        try {
+            final Team team = new Team(1L, "Team A");
+            em.persist(team);
+            final Member memberA = new Member(1L, null, "Member A");
+            em.persist(memberA);
+
+            team.updateMember(memberA);
+            em.flush();
+            em.clear();
+            final Member findMember = em.find(Member.class, memberA.getId());
+
+            assertThat(findMember.getTeam()).isNotNull();
+            transaction.commit();
+        } catch (final Exception e) {
+            transaction.rollback();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
 }

@@ -34,6 +34,10 @@ public class Member {
         return team;
     }
 
+    public void setTeam(final Team team) {
+        this.team = team;
+    }
+
     public String getName() {
         return name;
     }
