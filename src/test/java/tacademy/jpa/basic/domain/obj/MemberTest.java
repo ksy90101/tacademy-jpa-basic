@@ -49,7 +49,7 @@ class MemberTest {
         emf.close();
     }
 
-    @DisplayName("동등성 체크")
+    @DisplayName("동성 체크")
     @Test
     void identityTest() {
         final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
@@ -204,6 +204,104 @@ class MemberTest {
             final Member findMember = em.find(Member.class, memberA.getId());
 
             assertThat(findMember.getTeam()).isNotNull();
+            transaction.commit();
+        } catch (final Exception e) {
+            transaction.rollback();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
+
+    @DisplayName("엔티티 생명주기 테스트")
+    @Test
+    void entityLifeCycleTest() {
+        final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        final EntityManager em = emf.createEntityManager();
+        final EntityTransaction transaction = em.getTransaction();
+
+        transaction.begin();
+
+        try {
+            System.out.println("===== 영속 상태 테스트====");
+            final Team team = new Team(1L, "Team A"); // 준영속 상태
+            em.persist(team); // 영속 상태
+            final Member memberA = new Member(1L, null, "Member A"); // 준영속 상태
+            em.persist(memberA); // 영속 상태
+
+            em.flush();
+
+            System.out.println("===== 준영속 상태 테스트 ====");
+            em.detach(memberA); // 준영속
+
+            final Member member = em.find(Member.class, memberA.getId());// 영속상태로 변경 (SELECT 쿼리가 나감)
+
+            em.flush();
+            System.out.println("==== 삭제 테스트 ====");
+
+            em.remove(member); // 삭제 (삭제 쿼리)
+
+            transaction.commit();
+        } catch (final Exception e) {
+            transaction.rollback();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
+
+    @DisplayName("쓰기 지연 테스트")
+    @Test
+    void transactionalWriteBehindTest() {
+        final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        final EntityManager em = emf.createEntityManager();
+        final EntityTransaction transaction = em.getTransaction();
+
+        transaction.begin();
+
+        try {
+            final Team team = new Team(1L, "Team A"); // 준영속 상태
+            em.persist(team); // 영속 상태
+            System.out.println("====== SQL이 나가는가?========");
+            final Member memberA = new Member(1L, null, "Member A"); // 준영속 상태
+            em.persist(memberA); // 영속 상태
+            transaction.commit();
+        } catch (final Exception e) {
+            transaction.rollback();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
+
+    @DisplayName("변경감지 테스트")
+    @Test
+    void dirtyCheckingTest() {
+        final EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        final EntityManager em = emf.createEntityManager();
+        final EntityTransaction transaction = em.getTransaction();
+
+        transaction.begin();
+
+        try {
+            final Team team = new Team(1L, "Team A"); // 준영속 상태
+            em.persist(team); // 영속 상태
+            final Member memberA = new Member(1L, null, "Member A"); // 준영속 상태
+            em.persist(memberA); // 영속 상태
+
+            em.flush();
+
+            final Member member = em.find(Member.class, memberA.getId());
+            member.setName("Member B");
+
+            em.flush();
+
+            final Member findMember = em.find(Member.class, member.getId());
+
+            assertThat(findMember.getName()).isEqualTo("Member B");
             transaction.commit();
         } catch (final Exception e) {
             transaction.rollback();
