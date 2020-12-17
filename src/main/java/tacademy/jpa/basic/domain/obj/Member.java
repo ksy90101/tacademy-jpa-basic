@@ -5,8 +5,13 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 
 @Entity
+@NamedQuery(
+        name = "Member.findByName",
+        query = "SELECT m FROM Member m WHERE m.name = :name"
+)
 public class Member {
     @Id
     private Long id;

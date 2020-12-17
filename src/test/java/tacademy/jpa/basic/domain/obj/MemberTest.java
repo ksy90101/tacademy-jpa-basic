@@ -7,10 +7,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@Transactional
 class MemberTest {
 
     @DisplayName("객체에 맞춘 방식")
@@ -206,6 +208,7 @@ class MemberTest {
             assertThat(findMember.getTeam()).isNotNull();
             transaction.commit();
         } catch (final Exception e) {
+            System.out.println(e.getMessage());
             transaction.rollback();
         } finally {
             em.close();
@@ -244,6 +247,7 @@ class MemberTest {
 
             transaction.commit();
         } catch (final Exception e) {
+            System.out.println(e.getMessage());
             transaction.rollback();
         } finally {
             em.close();

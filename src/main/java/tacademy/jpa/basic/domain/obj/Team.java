@@ -23,10 +23,6 @@ public class Team {
         this.name = name;
     }
 
-    public List<Member> getMembers() {
-        return members;
-    }
-
     public Long getId() {
         return id;
     }
@@ -37,6 +33,10 @@ public class Team {
 
     public void updateMember(final Member member) {
         member.setTeam(this);
-        this.members.add(member);
+        members.add(member);
+    }
+
+    public List<Member> getMembers() {
+        return members;
     }
 }
